@@ -1,5 +1,6 @@
 using MessageBroker;
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
 
 namespace MessageSender.Controllers
 {
@@ -7,18 +8,18 @@ namespace MessageSender.Controllers
     [Route("Messsage")]
     public class MessageSenderController : ControllerBase
     {
-        private readonly RabbitMqClientFactory factory;
+        private readonly RabbitMqClientFactory _factory;
         public MessageSenderController(RabbitMqClientFactory rabbitMqClientFactory) 
         {
-            factory = rabbitMqClientFactory;
+            _factory = rabbitMqClientFactory;
         }
 
         [Route("Send/{message}")]
         [HttpGet]
         public async Task<IActionResult> GetAsync(string message)
         {
-            var messageSender = await factory.GetClientAsync("App Service MessageSender", "my_exchange", "my_queue", "my_routing_key");
-            await messageSender.SendMessageAsync(message);
+            var publisher = await _factory.GetClientAsync("Publisher", "my_exchange", "my_queue", "my_routing_key");
+            await publisher.PublishAsync(Encoding.UTF8.GetBytes(message));
             return Ok();
         }
     }

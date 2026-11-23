@@ -1,3 +1,5 @@
+using MessageBroker;
+
 namespace MessageProcessor
 {
     public class Program
@@ -6,7 +8,7 @@ namespace MessageProcessor
         {
             var builder = Host.CreateApplicationBuilder(args);
             builder.Services.AddHostedService<Worker>();
-            builder.Services.AddHostedService<Worker2>();
+            builder.Services.AddSingleton<RabbitMqClientFactory>();
 
             var host = builder.Build();
             host.Run();
